@@ -18,6 +18,10 @@ public class Employees {
 	this.designation=designation;
 }
 
+public Employees(Employees employees) {
+	// TODO Auto-generated constructor stub
+}
+
 public String getShiftzone() {
     return shiftzone;
   }
