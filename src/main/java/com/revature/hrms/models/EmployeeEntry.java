@@ -12,6 +12,7 @@ public class  EmployeeEntry {
   public Boolean record_type;
 
   public EmployeeEntry()
+  
   {
 	  
   }
