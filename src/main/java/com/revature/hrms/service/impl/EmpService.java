@@ -8,5 +8,5 @@ public interface EmpService {
 
   List<Employees> getEmployees() throws DataServiceException;
   List<EmployeeEntry>getLog() throws DataServiceException;
-  List<Details> getDetails() throws DataServiceException;
+   List<Detail> getDetails() throws DataServiceException;
 }

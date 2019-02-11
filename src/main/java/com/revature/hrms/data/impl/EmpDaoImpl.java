@@ -25,7 +25,7 @@ public class EmpDaoImpl implements EmpDao {
   public List<EmployeeEntry>getLog()throws DataAccessException{
 	try
 	{
-		String query="select user_id ,record_timestamp ,record_type from biometric_logs";
+		String query="select user_id ,record_timestamp ,record_type from biometric_logs order by user_id,record_timestamp,record_type";
 		return dataRetriever.retrieveBySQLResultTransformer(query, EmployeeEntry.class);
 		
 	}

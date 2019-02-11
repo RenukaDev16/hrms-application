@@ -44,11 +44,11 @@ public class EmpController {
   }
   
   @GetMapping(value="/details")
-  public ResponseEntity<List<Details>>listdetails(){
+  public ResponseEntity<List<Detail>>listdetails(){
 	  try
 	  {
-		  List<Details>detail=empservice.getDetails();
-		  return new ResponseEntity<List<Details>>(detail,HttpStatus.OK);
+		  List<Detail>detail=empservice.getDetails();
+		  return new ResponseEntity<List<Detail>>(detail,HttpStatus.OK);
 	  }
 	  catch(DataServiceException e)
 	  {

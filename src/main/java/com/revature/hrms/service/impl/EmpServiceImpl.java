@@ -13,9 +13,11 @@ import org.springframework.stereotype.Service;
 import com.revature.hrms.data.exception.DataAccessException;
 import com.revature.hrms.data.exception.DataServiceException;
 import com.revature.hrms.data.impl.EmpDao;
-import com.revature.hrms.models.Details;
+import com.revature.hrms.models.Detail;
 import com.revature.hrms.models.EmployeeEntry;
 import com.revature.hrms.models.Employees;
+
+import ch.qos.logback.core.util.Duration;
 
 @Service
 public class EmpServiceImpl implements EmpService {
@@ -42,67 +44,69 @@ public class EmpServiceImpl implements EmpService {
   
 }
   
-  public List<Details>getDetails()throws DataServiceException{
-	
-	  try{
-		  
-		 List<Employees>employees =dao.getEmployees();
-		Iterator itr=employees.iterator();
-		List<Details>detail=new ArrayList<>();
-		while(itr.hasNext())
-		{ 
-			Employees emp= (Employees) itr.next();
-		    detail.add(new  Details(emp.getCode(),emp.getName(),emp.getDepartment(),emp.getDesignation(),emp.getShiftzone()));
-		} 
-		 List<EmployeeEntry>logs=dao.getLog();
-		Iterator itr1=logs.iterator();
-		int count=0;
-		while(itr1.hasNext())
-		{
-			 count++;
-			EmployeeEntry entry=(EmployeeEntry)itr1.next();
-			Details obj=detail.get(count);
-			obj.setRecord_timestamp(entry.record_timestamp);
-			obj.setRecord_type(entry.record_type);
-		}	
-			
-		for(int i=0;i<detail.size();i++)
-		{
-			for(int j=i+1;j<detail.size();j++)
-			{
-			Details obj1=detail.get(i);
-			Details obj2=detail.get(j);
-			if(obj1.getCode()==obj2.getCode())
-			{
-		LocalDate d1=obj1.getRecord_timestamp().toLocalDate();
-		LocalDate d2=obj2.getRecord_timestamp().toLocalDate();
-		LocalTime t1=obj1.getRecord_timestamp().toLocalTime();
-		LocalTime t2=obj2.getRecord_timestamp().toLocalTime();
-		LocalTime firstin,lastout,flag = null;
-				if(d1.isEqual(d2)&&t1.isBefore(t2))
-				{
-					if(obj1.getRecord_type()==false && obj2.getRecord_type()==true)
-					{
-						
-						firstin=t1;
-					 
-					   if(flag.isBefore(t2))
+  public List<Detail>getDetails()throws DataServiceException{
+	try
+	{
+		List<Employees>emp=dao.getEmployees();
+		List<Detail>detail=new ArrayList<>();
+	   List<EmployeeEntry>entryList=dao.getLog();
+	   LocalTime firstin;
+	   LocalTime lastout;
+	   LocalTime difference;
+	 
+	   	
+	   for(int i=0;i<entryList.size()-2;i++)
+	   {
+		   EmployeeEntry entryObj=(EmployeeEntry)entryList.get(i);
+		   if(entryObj.getRecord_type()==false)
+		   {
+			   firstin=entryObj.getRecord_timestamp().toLocalTime();
+			   for(int j=i+1;j<entryList.size()-1;j++)
+			   {
+				   EmployeeEntry f=(EmployeeEntry)entryList.get(j);
+				   if(entryObj.getRecord_timestamp().toLocalDate().equals(f.getRecord_timestamp().toLocalDate()))
+				   {
+					   
+					   if(j==entryList.size()-1 && f.getRecord_type()==true)
 					   {
-						   flag=t2;
+						   lastout=f.getRecord_timestamp().toLocalTime();
+						difference= lastout.minusHours(firstin.getHour());
+						
+							 detail.add(new Detail(f.getUser_id(),f.getRecord_timestamp().toLocalDate(),firstin,lastout,difference));
+							 
+					//	returning(f.getUser_id()+" "+f.getRecord_timestamp().toLocalDate()+" ");
+						  break; 
 					   }
-					}
-				}
-			}
-		}
-		}    
-			
-		
-		
+					   EmployeeEntry g=(EmployeeEntry)entryList.get(j+1);
+					   if(!(f.getRecord_timestamp().toLocalDate().equals(g.getRecord_timestamp().toLocalDate())))
+					   {
+						   if(f.getRecord_type()==true)
+						   {
+							   lastout= f.getRecord_timestamp().toLocalTime();
+							   difference=lastout.minusHours(firstin.getHour());
+							   
+							 detail.add(new Detail(f.getUser_id(),f.getRecord_timestamp().toLocalDate(),firstin,lastout,difference));
+									
+						//   detail.add(new Detail(name,design,department,shift,f.getUser_id(),f.getRecord_timestamp().toLocalDate(),firstin,lastout,difference));
+							   //returning all the values ..
+							   i=j;
+							   break;
+						   }
+						   else
+						   {
+							   i=j;
+							   break;
+						   }
+					   }
+				   }
+			   }
+		   }
+	   }
+
+
+	   return detail;
+	}
 	
-		
-		return null; 
-		  
-	  }
 	  catch (DataAccessException e) {
 	      throw new DataServiceException(e);
 	      }
