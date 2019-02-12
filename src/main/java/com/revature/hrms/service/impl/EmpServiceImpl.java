@@ -12,6 +12,7 @@ import com.revature.hrms.data.impl.EmpDao;
 import com.revature.hrms.models.Detail;
 import com.revature.hrms.models.EmployeeEntry;
 import com.revature.hrms.models.Employees;
+import com.revature.hrms.models.Logs;
 @Service
 public class EmpServiceImpl implements EmpService {
   @Autowired EmpDao dao;
@@ -36,19 +37,22 @@ public class EmpServiceImpl implements EmpService {
       }
   
 }
-  
+  //final detail method
   public List<Detail>getDetails()throws DataServiceException{
 	try
 	{  
 		List<Employees>emp=dao.getEmployees();
-		List<Detail>detail=new ArrayList<>();
 	    List<EmployeeEntry>entryList=dao.getLog();
+	    List<Logs>logs=new ArrayList<>();
+	    List<Detail>detail=new ArrayList<>();
+	//    List<Retrieve>ret=new ArrayList<>();
+	//    List<Samp>samp=new ArrayList<>();
 	    LocalTime firstin;
 	    LocalTime lastout;
 	    LocalTime difference;
-	    String name=" ";
+	    String name="";
 	    String dept= "";
-	   String   design="";
+	    String   design="";
 		String shift="";
 	 
 	   	
@@ -75,72 +79,69 @@ public class EmpServiceImpl implements EmpService {
 				   
 				 
 				   EmployeeEntry entryObj1=(EmployeeEntry)entryList.get(j); 
-  if(entryObj.getRecord_timestamp().toLocalDate().equals(entryObj1.getRecord_timestamp().toLocalDate()))// i & j compared 
+  if(entryObj.getRecord_timestamp().toLocalDate().equals(entryObj1.getRecord_timestamp().toLocalDate())&& entryObj1.getUser_id().equals(entryObj.getUser_id()))// i & j compared 
 {
 					   EmployeeEntry entryObj2=(EmployeeEntry)entryList.get(j+1); 
 	  if(entryObj1.getRecord_timestamp().toLocalDate().equals(entryObj2.getRecord_timestamp().toLocalDate()))// last table record
-  {
-					if(j==entryList.size()-2)
-					{
-                       if(entryObj2.getRecord_type()==true)
+   {
+				if(j==entryList.size()-2)
+				{
+                       if(entryObj2.getRecord_type()==true && entryObj1.getUser_id()==entryObj2.getUser_id())
                        {
 						   lastout=entryObj2.getRecord_timestamp().toLocalTime();
 						difference= lastout.minusHours(firstin.getHour());
-						detail.add(new Detail(name,dept,design,shift,entryObj2.getUser_id(),entryObj2.getRecord_timestamp().toLocalDate(),firstin,lastout,difference));						
+						logs.add(new Logs(entryObj2.getUser_id(),entryObj2.getRecord_timestamp().toLocalDate(),firstin,lastout,difference));						
                       }
                        else
                        {
-                    	   detail.add(new Detail(name,dept,design,shift,entryObj2.getUser_id(),entryObj2.getRecord_timestamp().toLocalDate(),firstin,null,null));						
+                    	   logs.add(new Logs(entryObj2.getUser_id(),entryObj2.getRecord_timestamp().toLocalDate(),firstin,null,null));						
                        }
-					}
+				}
   }  
-					 
+ 					 
 					   
 	if(!(entryObj1.getRecord_timestamp().toLocalDate().equals(entryObj2.getRecord_timestamp().toLocalDate())))//last record of user or particular date 
- {
+  {
 						   if(entryObj1.getRecord_type()==true)
 						   {
+							   
 							   lastout= entryObj1.getRecord_timestamp().toLocalTime();
 							   difference=lastout.minusHours(firstin.getHour());
-							   
-							   for(int k=0;k<emp.size();k++)
-							   {
-								  Employees e=(Employees)emp.get(k);
-								  if(e.getCode().equals(entryObj.getUser_id()))
-								  {
-									 name=e.getName();
-									 dept=e.getDepartment();
-									 design=e.getDesignation();
-									 shift=e.getShiftzone();
-								  }}
-							   for(int k=0;k<emp.size();k++)
-							   {
-								  Employees e=(Employees)emp.get(k);
-								  if(e.getCode().equals(entryObj.getUser_id()))
-								  {
-									 name=e.getName();
-									 dept=e.getDepartment();
-									 design=e.getDesignation();
-									 shift=e.getShiftzone();
-								  }}
-								   detail.add(new Detail(name,dept,design,shift,entryObj1.getUser_id(),entryObj1.getRecord_timestamp().toLocalDate(),firstin,lastout,difference));
-							                                                                                                                                                                                                                                     
-							   i=j;
+								   logs.add(new Logs(entryObj1.getUser_id(),entryObj1.getRecord_timestamp().toLocalDate(),firstin,lastout,difference));                                                                                                                                                                                                                                     
+							   detail.add(name,dept,design,shift,logs);
+								   i=j;
 							   break;
 						   }
 						   else
 						   {
 							
-							   detail.add(new Detail(name,dept,design,shift,entryObj1.getUser_id(),entryObj1.record_timestamp.toLocalDate(),firstin,null,null));
+							   logs.add(new Logs(entryObj1.getUser_id(),entryObj1.getRecord_timestamp().toLocalDate(),firstin,null,null));
+						
 							   i=j;
 							   break;
 						   }
 
-					   }
+ }
 				   }
-			   }
+		
+ }
+		
+		
 		   }
 	   }
+/* for(int q=0;q<logs.size();q++)
+ {
+	 Logs log1=(Logs)logs.get(q);
+	 Logs log2=(Logs)logs.get(q+1);
+	 if(log1.getUser_id()==log2.getUser_id())
+	 {
+		 ret.add(log1.getDate(),log1.getIn(),log1.getOut(),log1.getDiff());
+		 ret.add(log2.getDate(),log2.getIn(),log2.getOut(),log2.getDiff());
+		 samp.addAll(ret);  
+	 }
+	 ret.clear();
+
+ } */
 
 
 	   return detail;
