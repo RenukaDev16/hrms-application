@@ -7,22 +7,21 @@ public class Employees {
   public String designation;
   public String department;
   public String shiftzone;
-  public Employees(){
-	  
+
+  public Employees() {}
+
+  public Employees(String code, String name, String designation) {
+    super();
+    this.code = code;
+    this.name = name;
+    this.designation = designation;
   }
-  
-  public Employees(String code, String name,String designation) {
-	super();
-	this.code = code;
-	this.name = name;
-	this.designation=designation;
-}
 
-public Employees(Employees employees) {
-	// TODO Auto-generated constructor stub
-}
+  public Employees(Employees employees) {
+    // TODO Auto-generated constructor stub
+  }
 
-public String getShiftzone() {
+  public String getShiftzone() {
     return shiftzone;
   }
 
@@ -66,5 +65,4 @@ public String getShiftzone() {
   public String toString() {
     return "Employee [code=" + code + ", name=" + name + "]";
   }
-
 }

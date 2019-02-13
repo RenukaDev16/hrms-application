@@ -7,6 +7,8 @@ import java.util.List;
 public interface EmpService {
 
   List<Employees> getEmployees() throws DataServiceException;
-  List<EmployeeEntry>getLog() throws DataServiceException;
-   List<Detail> getDetails() throws DataServiceException;
+
+  List<EmployeeEntry> getLog() throws DataServiceException;
+
+  List<Detail> getDetails() throws DataServiceException;
 }

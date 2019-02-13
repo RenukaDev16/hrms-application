@@ -25,39 +25,27 @@ public class EmpController {
     }
     return null;
   }
-  
-  @GetMapping(value="/entry/")
-  public ResponseEntity<List<EmployeeEntry>>listentries()
-  {
-	  try
-	  {
-		  List<EmployeeEntry>entry=empservice.getLog();
-		  return new ResponseEntity<List<EmployeeEntry>>(entry,HttpStatus.OK);
-		  
-		  
-	  }
-	  catch(DataServiceException e)
-	  {
-		  System.out.print("Exception is"+e);
-	  }
-	 return null;
+
+  @GetMapping(value = "/entry/")
+  public ResponseEntity<List<EmployeeEntry>> listentries() {
+    try {
+      List<EmployeeEntry> entry = empservice.getLog();
+      return new ResponseEntity<List<EmployeeEntry>>(entry, HttpStatus.OK);
+
+    } catch (DataServiceException e) {
+      System.out.print("Exception is" + e);
+    }
+    return null;
   }
-  
-  @GetMapping(value="/details")
-  public ResponseEntity<List<Detail>>listdetails(){
-	  try
-	  {
-		  List<Detail>detail=empservice.getDetails();
-		  return new ResponseEntity<List<Detail>>(detail,HttpStatus.OK);
-	  }
-	  catch(DataServiceException e)
-	  {
-		  System.out.print("Exception is"+e);
-	  }
-	 return null;
+
+  @GetMapping(value = "/details")
+  public ResponseEntity<List<Detail>> listdetails() {
+    try {
+      List<Detail> detail = empservice.getDetails();
+      return new ResponseEntity<List<Detail>>(detail, HttpStatus.OK);
+    } catch (DataServiceException e) {
+      System.out.print("Exception is" + e);
+    }
+    return null;
   }
-  
-	  
-  }
-  
- 
+}
