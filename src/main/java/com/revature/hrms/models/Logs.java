@@ -14,6 +14,7 @@ public class Logs {
   public LocalTime in;
   public LocalTime out;
   public LocalTime diff;
+ 
 
   public Logs() {}
 

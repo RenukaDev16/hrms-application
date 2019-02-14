@@ -1,18 +1,22 @@
 package com.revature.hrms.service.impl;
 
 import com.revature.hrms.data.exception.DataAccessException;
+
 import com.revature.hrms.data.exception.DataServiceException;
 import com.revature.hrms.data.impl.EmpDao;
 import com.revature.hrms.models.Detail;
 import com.revature.hrms.models.EmployeeEntry;
 import com.revature.hrms.models.Employees;
-import com.revature.hrms.models.JoinRecord;
+import com.revature.hrms.models.Record;
 import com.revature.hrms.models.Logs;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -206,44 +210,39 @@ public class EmpServiceImpl implements EmpService {
           }
         }
       }
-      String id1 = null;
-      String name1 =null;;
-      String dept1 = null;
-      String design1 =null;
-      String shift1 =null;
-// Collections.<Logs>sort( logs);
-      int siz=logs.size();
-      for (int q = 0; q <siz- 1; q++) {
-        List<JoinRecord> record = new ArrayList<>();
-        for (int r = q + 1; r < logs.size(); r++) {
-          Logs logg = (Logs) logs.get(q);
-          Logs logg1 = (Logs) logs.get(r);
-          if (logg.getUser_id().equals(logg1.getUser_id())) { 
-            record.add(
-                new JoinRecord(logg1.getDate(), logg1.getIn(), logg1.getOut(), logg1.getDiff()));
-           
-          }
-          else {
-            id1 = logg.getUser_id();
-            name1 = logg.getName();
-            dept1 = logg.getDepart();
-            design1 = logg.getDesign();
-            shift1 = logg.getShift();
-            record.add(
-                new JoinRecord(logg.getDate(), logg.getIn(), logg.getOut(), logg.getDiff()));
-            q = r-1;
-            break;
-          } 
-        }
-        List<JoinRecord> list = new ArrayList<JoinRecord>();
-        list.addAll(record);
-        detail.add(new Detail(id1, name1, dept1, design1, shift1, list));
-        
-      }
+  
+      List<Detail>  userDetails = new ArrayList<>();
+      for(Logs log: logs){
+   	  Detail foundDetail = null;
+   	  for(Detail tempDetail: userDetails){
+    		  if(tempDetail.getUser_id().equals(log.getUser_id())){
+    			  foundDetail = tempDetail;
+    			  break;    		  }
+    	  }
+    	  if(Objects.isNull(foundDetail)){
+    		  foundDetail = new Detail();
+    	  } 
+   	  foundDetail.setUser_id(log.getUser_id());
+		  foundDetail.setName(log.getName());
+		  foundDetail.setDepartment(log.getDepart());
+		  foundDetail.setDesignation(log.getDesign());
+		  foundDetail.setShiftzone(log.getShift());
+		  		  if(Objects.isNull(foundDetail.getRecord())){
+			  //found detail object's list is empty ,creating new list
+			  foundDetail.setRecord(new ArrayList<>());
+	  }
+		  
+		Record record = new Record(log.getDate(), log.getIn(), log.getOut(), log.getDiff());
+		//getting rec list using obj fd and adding list
+		foundDetail.getRecord().add(record); 
+      if(!userDetails.contains(foundDetail)){
+			  userDetails.add(foundDetail);
+		  }
+     }
       
      
      
-      return detail;
+      return userDetails;
     } catch (DataAccessException e) {
       throw new DataServiceException(e);
     }
